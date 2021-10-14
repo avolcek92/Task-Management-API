@@ -2,13 +2,14 @@ package craftsoft.taskmanagementapi.domain;
 
 import craftsoft.taskmanagementapi.domain.enums.Group;
 import craftsoft.taskmanagementapi.domain.enums.Status;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -16,7 +17,7 @@ import java.util.List;
 public class Task {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
@@ -26,10 +27,12 @@ public class Task {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "group", nullable = false)
+    @Column(name = "groups", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Group group;
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Column(name = "assignee")
