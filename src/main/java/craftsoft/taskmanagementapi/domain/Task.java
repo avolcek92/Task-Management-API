@@ -41,6 +41,6 @@ public class Task {
     @Column(name = "duration", nullable = false)
     private long duration;
 
-    @OneToMany(mappedBy = "task")
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<SubTask> subTask;
 }
