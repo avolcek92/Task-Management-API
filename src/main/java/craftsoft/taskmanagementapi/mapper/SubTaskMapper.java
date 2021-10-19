@@ -18,7 +18,6 @@ public class SubTaskMapper {
 
     public SubTask toDomain(SubTaskDTO subTaskDTO) {
         return SubTask.builder()
-                .id(subTaskDTO.getId())
                 .name(subTaskDTO.getName())
                 .description(subTaskDTO.getDescription())
                 .status(subTaskDTO.getStatus())

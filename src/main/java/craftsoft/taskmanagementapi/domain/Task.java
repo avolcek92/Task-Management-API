@@ -5,6 +5,7 @@ import craftsoft.taskmanagementapi.domain.enums.Status;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -13,13 +14,8 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table( name = "task")
-public class Task {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private long id;
+@Table(name = "task")
+public class Task extends BaseEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -37,6 +33,15 @@ public class Task {
 
     @Column(name = "assignee")
     private String assignee;
+
+    @Column(name = "in_progress_at")
+    private LocalDateTime inProgressAt;
+
+    @Column(name = "in_test_at")
+    private LocalDateTime inTestAt;
+
+    @Column(name = "done_at")
+    private LocalDateTime DoneAt;
 
     @Column(name = "duration", nullable = false)
     private long duration;

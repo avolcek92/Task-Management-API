@@ -1,17 +1,21 @@
 package craftsoft.taskmanagementapi.service;
 
-import craftsoft.taskmanagementapi.dto.TaskDTO;
+import craftsoft.taskmanagementapi.dto.TaskResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public interface TaskService {
 
-    TaskDTO createTask(TaskDTO taskDTO);
+    int createTask(TaskResponseDTO taskResponseDTO);
 
-    Page<TaskDTO> getAllTasks(int page, int size);
+    Optional<TaskResponseDTO> getTaskById(int id);
 
-    TaskDTO updateTask(TaskDTO taskDTO);
+    Page<TaskResponseDTO> getAllTasks(int page, int size, String sortField, String direction, String search);
 
-    void deleteTask(long id);
+    TaskResponseDTO updateTask(TaskResponseDTO taskResponseDTO);
+
+    void deleteTask(int id);
 }

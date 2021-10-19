@@ -11,9 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class TaskDTO {
+public class TaskResponseDTO {
 
-    private long id;
+    private int id;
 
     private String name;
 
