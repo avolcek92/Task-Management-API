@@ -43,8 +43,8 @@ public class Task extends BaseEntity {
     @Column(name = "done_at")
     private LocalDateTime DoneAt;
 
-    @Column(name = "duration", nullable = false)
-    private long duration;
+    @Column(name = "duration")
+    private Long duration;
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
     private List<SubTask> subTask;

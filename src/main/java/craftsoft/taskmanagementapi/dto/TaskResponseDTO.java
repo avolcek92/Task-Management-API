@@ -1,6 +1,5 @@
 package craftsoft.taskmanagementapi.dto;
 
-import craftsoft.taskmanagementapi.domain.SubTask;
 import craftsoft.taskmanagementapi.domain.enums.Group;
 import craftsoft.taskmanagementapi.domain.enums.Status;
 import lombok.*;
@@ -25,7 +24,7 @@ public class TaskResponseDTO {
 
     private String assignee;
 
-    private long duration;
+    private Long duration;
 
     private List<SubTaskDTO> subTask;
 }

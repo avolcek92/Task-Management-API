@@ -23,17 +23,14 @@ public class TaskController {
     @Autowired
     TaskService taskService;
 
-    @PostMapping(
-            consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createTask(@RequestBody TaskResponseDTO taskResponseDTO) {
         int createdTaskId = taskService.createTask(taskResponseDTO);
         logger.info("New task was created id:{}", createdTaskId);
         return ResponseEntity.created(URI.create("/tasks/" + createdTaskId)).build();
     }
 
-    @GetMapping(value = "/{id}",
-            produces = "application/json",
-            consumes = "application/json")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable("id") int id) {
         Optional<TaskResponseDTO> task = taskService.getTaskById(id);
         if (task.isEmpty()) {
@@ -44,9 +41,7 @@ public class TaskController {
         return ResponseEntity.ok().body(task.get());
     }
 
-    @GetMapping(
-            produces = "application/json",
-            consumes = "application/json")
+    @GetMapping
     public ResponseEntity<Page<TaskResponseDTO>> getAllTasks(
             @RequestParam(required = false, name = "page", defaultValue = "0") int page,
             @RequestParam(required = false, name = "size", defaultValue = "20") int size,
@@ -62,22 +57,15 @@ public class TaskController {
         return ResponseEntity.ok().body(taskResponseDTOPage);
     }
 
-    @PutMapping(
-            produces = "application/json",
-            consumes = "application/json")
+    @PutMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateTask(@RequestBody TaskResponseDTO taskResponseDTO) { // no content/if exist
         taskService.updateTask(taskResponseDTO);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(
-            value = "/{taskId}",
-            produces = "application/json",
-            consumes = "application/json")
+    @DeleteMapping(value = "/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable("taskId") int id) { // no content/ if exist
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

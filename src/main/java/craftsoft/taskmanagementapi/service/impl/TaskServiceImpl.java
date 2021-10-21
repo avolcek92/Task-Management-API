@@ -50,12 +50,15 @@ public class TaskServiceImpl implements TaskService {
         FilterSpecification filterSpecificationForGroupColumn = new FilterSpecification("group", value);
         FilterSpecification filterSpecificationForStatusColumn = new FilterSpecification("status", value);
         FilterSpecification filterSpecificationForAssigneeColumn = new FilterSpecification("assignee", value);
+        FilterSpecification filterSpecificationForDurationColumn = new FilterSpecification("duration", value);
         return taskRepository.findAll(Specification
                         .where(filterSpecificationForDescriptionColumn)
                         .or(filterSpecificationForNameColumn)
                         .or(filterSpecificationForGroupColumn)
                         .or(filterSpecificationForStatusColumn)
-                        .or(filterSpecificationForAssigneeColumn)).stream()
+                        .or(filterSpecificationForAssigneeColumn)
+                        .or(filterSpecificationForDurationColumn))
+                .stream()
                 .map(task -> taskMapper.toDTO(task))
                 .collect(Collectors.toList());
     }
