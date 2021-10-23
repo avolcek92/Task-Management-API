@@ -2,10 +2,14 @@ package craftsoft.taskmanagementapi.service.impl;
 
 import craftsoft.taskmanagementapi.dao.TaskRepository;
 import craftsoft.taskmanagementapi.domain.Task;
+import craftsoft.taskmanagementapi.dto.Parameters;
 import craftsoft.taskmanagementapi.dto.TaskResponseDTO;
 import craftsoft.taskmanagementapi.mapper.TaskMapper;
 import craftsoft.taskmanagementapi.service.TaskService;
-import craftsoft.taskmanagementapi.service.filter.FilterSpecification;
+import craftsoft.taskmanagementapi.service.filter.GroupFilterSpecification;
+import craftsoft.taskmanagementapi.service.filter.LongFilterSpecification;
+import craftsoft.taskmanagementapi.service.filter.StatusFilterSpecification;
+import craftsoft.taskmanagementapi.service.filter.StringFilterSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,29 +39,30 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Page<TaskResponseDTO> getAllTasks(int page, int size, String sortField, String direction, String searchValue) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortField).ascending());
-        if (searchValue == null) {
+    public Page<TaskResponseDTO> getAllTasks(Parameters parameters) {
+        Pageable pageable = PageRequest.of(parameters.getPage(), parameters.getPageSize(), Sort.by(parameters.getSortField()).ascending());
+        if (parameters.getName() == null & parameters.getDescription() == null & parameters.getGroup() == null & parameters.getStatus() == null & parameters.getAssignee() == null & parameters.getDuration() == null) {
             return taskRepository.findAll(pageable).map(task -> taskMapper.toDTO(task));
         } else {
-            return new PageImpl<>(searchInAllColumnsByValue(searchValue), pageable, searchInAllColumnsByValue(searchValue).size());
+            return new PageImpl<>(searchInAllColumnsByValue(parameters), pageable, searchInAllColumnsByValue(parameters).size());
         }
+
     }
 
-    private List<TaskResponseDTO> searchInAllColumnsByValue(String value) {
-        FilterSpecification filterSpecificationForNameColumn = new FilterSpecification("name", value);
-        FilterSpecification filterSpecificationForDescriptionColumn = new FilterSpecification("description", value);
-        FilterSpecification filterSpecificationForGroupColumn = new FilterSpecification("group", value);
-        FilterSpecification filterSpecificationForStatusColumn = new FilterSpecification("status", value);
-        FilterSpecification filterSpecificationForAssigneeColumn = new FilterSpecification("assignee", value);
-        FilterSpecification filterSpecificationForDurationColumn = new FilterSpecification("duration", value);
+    private List<TaskResponseDTO> searchInAllColumnsByValue(Parameters parameters) {
+        StringFilterSpecification nameColumnSpecification = new StringFilterSpecification("name", parameters.getName());
+        StringFilterSpecification descriptionColumnSpecification = new StringFilterSpecification("description", parameters.getDescription());
+        StatusFilterSpecification statusColumnSpecification = new StatusFilterSpecification("status", parameters.getStatus());
+        GroupFilterSpecification groupColumnSpecification = new GroupFilterSpecification("group", parameters.getGroup());
+        StringFilterSpecification assigneeColumnSpecification = new StringFilterSpecification("assignee", parameters.getAssignee());
+        LongFilterSpecification durationColumnSpecification = new LongFilterSpecification("duration", parameters.getDuration());
         return taskRepository.findAll(Specification
-                        .where(filterSpecificationForDescriptionColumn)
-                        .or(filterSpecificationForNameColumn)
-                        .or(filterSpecificationForGroupColumn)
-                        .or(filterSpecificationForStatusColumn)
-                        .or(filterSpecificationForAssigneeColumn)
-                        .or(filterSpecificationForDurationColumn))
+                        .where(nameColumnSpecification)
+                        .or(descriptionColumnSpecification)
+                        .or(statusColumnSpecification)
+                        .or(groupColumnSpecification)
+                        .or(assigneeColumnSpecification)
+                        .or(durationColumnSpecification))
                 .stream()
                 .map(task -> taskMapper.toDTO(task))
                 .collect(Collectors.toList());

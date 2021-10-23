@@ -10,16 +10,16 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 @AllArgsConstructor
-public class FilterSpecification implements Specification<Task> {
+public class StringFilterSpecification implements Specification<Task> {
 
     private String column;
     private String value;
 
     @Override
     public Predicate toPredicate(Root<Task> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-            if (root.get(column).getJavaType() == String.class) {
-                return criteriaBuilder.like(root.<String>get(column), "%" + value + "%");
-            }
+        if (value != null) {
+            return criteriaBuilder.like(root.get(column), "%" + value + "%");
+        }
         return null;
     }
 }

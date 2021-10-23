@@ -1,5 +1,6 @@
 package craftsoft.taskmanagementapi.service;
 
+import craftsoft.taskmanagementapi.dto.Parameters;
 import craftsoft.taskmanagementapi.dto.TaskResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -13,7 +14,7 @@ public interface TaskService {
 
     Optional<TaskResponseDTO> getTaskById(int id);
 
-    Page<TaskResponseDTO> getAllTasks(int page, int size, String sortField, String direction, String search);
+    Page<TaskResponseDTO> getAllTasks(Parameters parameters);
 
     TaskResponseDTO updateTask(TaskResponseDTO taskResponseDTO);
 
