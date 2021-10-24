@@ -3,6 +3,7 @@ package craftsoft.taskmanagementapi.controller;
 import craftsoft.taskmanagementapi.domain.enums.Group;
 import craftsoft.taskmanagementapi.domain.enums.Status;
 import craftsoft.taskmanagementapi.dto.Parameters;
+import craftsoft.taskmanagementapi.dto.TaskRequestDTO;
 import craftsoft.taskmanagementapi.dto.TaskResponseDTO;
 import craftsoft.taskmanagementapi.service.TaskService;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -27,21 +27,21 @@ public class TaskController {
     TaskService taskService;
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createTask(@RequestBody TaskResponseDTO taskResponseDTO) {
-        int createdTaskId = taskService.createTask(taskResponseDTO);
+    public ResponseEntity<String> createTask(@RequestBody TaskRequestDTO taskRequestDTO) {
+        int createdTaskId = taskService.createTask(taskRequestDTO);
         logger.info("New task was created id:{}", createdTaskId);
         return ResponseEntity.created(URI.create("/tasks/" + createdTaskId)).build();
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable("id") int id) {
-        Optional<TaskResponseDTO> task = taskService.getTaskById(id);
-        if (task.isEmpty()) {
+        TaskResponseDTO taskResponseDTO = taskService.getTaskById(id);
+        if (taskResponseDTO == null) {
             logger.info("Task with id:{} not exist", id);
             return ResponseEntity.notFound().build();
         }
         logger.info("Task was retrieved id:{}", id);
-        return ResponseEntity.ok().body(task.get());
+        return ResponseEntity.ok().body(taskResponseDTO);
     }
 
     @GetMapping
@@ -54,9 +54,7 @@ public class TaskController {
             @RequestParam(required = false, name = "group") Group group,
             @RequestParam(required = false, name = "status") Status status,
             @RequestParam(required = false, name = "assignee") String assignee,
-            @RequestParam(required = false, name = "duration") Long duration)
-             {
-
+            @RequestParam(required = false, name = "duration") Long duration) {
         Parameters parameters = Parameters.builder()
                 .page(page)
                 .pageSize(pageSize)
@@ -68,7 +66,6 @@ public class TaskController {
                 .assignee(assignee)
                 .duration(duration)
                 .build();
-
         Page<TaskResponseDTO> taskResponseDTOPage = taskService.getAllTasks(parameters);
         if (taskResponseDTOPage.isEmpty()) {
             logger.info("Empty list of Tasks was retrieved");
@@ -79,14 +76,26 @@ public class TaskController {
     }
 
     @PutMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateTask(@RequestBody TaskResponseDTO taskResponseDTO) { // no content/if exist
-        taskService.updateTask(taskResponseDTO);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> updateTask(@RequestBody TaskRequestDTO taskRequestDTO) {
+        Integer taskId = taskService.updateTask(taskRequestDTO);
+        if (taskId == null) {
+            logger.info("Can't update, Task not exist");
+            return ResponseEntity.notFound().build();
+        } else {
+            logger.info("Task successfully updated, id:{}", taskId);
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @DeleteMapping(value = "/{taskId}")
-    public ResponseEntity<Void> deleteTask(@PathVariable("taskId") int id) { // no content/ if exist
-        taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteTask(@PathVariable("taskId") int id) {
+        Integer taskId = taskService.deleteTask(id);
+        if (taskId == null) {
+            logger.info("Can't delete, Task already not exist");
+            return ResponseEntity.notFound().build();
+        } else {
+            logger.info("Task successfully deleted, id:{}", taskId);
+            return ResponseEntity.noContent().build();
+        }
     }
 }

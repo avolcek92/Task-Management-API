@@ -3,11 +3,17 @@ package craftsoft.taskmanagementapi.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import craftsoft.taskmanagementapi.domain.enums.Group;
 import craftsoft.taskmanagementapi.domain.enums.Status;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.*;
 import java.util.List;
 
+@Getter
+@Setter
 public class TaskRequestDTO {
+
+    private int id;
 
     @JsonProperty(required = true)
     @NotEmpty

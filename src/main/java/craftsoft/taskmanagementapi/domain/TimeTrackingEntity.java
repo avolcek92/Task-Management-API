@@ -10,12 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    protected int id;
+public abstract class TimeTrackingEntity {
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false, nullable = false)

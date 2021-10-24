@@ -15,7 +15,12 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "task")
-public class Task extends BaseEntity {
+public class Task extends TimeTrackingEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected int id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -41,7 +46,7 @@ public class Task extends BaseEntity {
     private LocalDateTime inTestAt;
 
     @Column(name = "done_at")
-    private LocalDateTime DoneAt;
+    private LocalDateTime doneAt;
 
     @Column(name = "duration")
     private Long duration;

@@ -1,8 +1,8 @@
 package craftsoft.taskmanagementapi.service.impl;
 
 import craftsoft.taskmanagementapi.dao.TaskRepository;
-import craftsoft.taskmanagementapi.domain.Task;
 import craftsoft.taskmanagementapi.dto.Parameters;
+import craftsoft.taskmanagementapi.dto.TaskRequestDTO;
 import craftsoft.taskmanagementapi.dto.TaskResponseDTO;
 import craftsoft.taskmanagementapi.mapper.TaskMapper;
 import craftsoft.taskmanagementapi.service.TaskService;
@@ -16,7 +16,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,19 +28,19 @@ public class TaskServiceImpl implements TaskService {
     TaskMapper taskMapper;
 
     @Override
-    public int createTask(TaskResponseDTO taskResponseDTO) {
-        return taskRepository.save(taskMapper.toDomain(taskResponseDTO)).getId();
+    public int createTask(TaskRequestDTO taskRequestDTO) {
+        return taskRepository.save(taskMapper.toDomain(taskRequestDTO)).getId();
     }
 
     @Override
-    public Optional<TaskResponseDTO> getTaskById(int id) {
-        return taskRepository.getTaskById(id);
+    public TaskResponseDTO getTaskById(int id) {
+        return taskRepository.findById(id).map(task -> taskMapper.toDTO(task)).orElse(null);
     }
 
     @Override
     public Page<TaskResponseDTO> getAllTasks(Parameters parameters) {
         Pageable pageable = PageRequest.of(parameters.getPage(), parameters.getPageSize(), Sort.by(parameters.getSortField()).ascending());
-        if (parameters.getName() == null & parameters.getDescription() == null & parameters.getGroup() == null & parameters.getStatus() == null & parameters.getAssignee() == null & parameters.getDuration() == null) {
+        if (parameters.getName() == null && parameters.getDescription() == null && parameters.getGroup() == null && parameters.getStatus() == null && parameters.getAssignee() == null && parameters.getDuration() == null) {
             return taskRepository.findAll(pageable).map(task -> taskMapper.toDTO(task));
         } else {
             return new PageImpl<>(searchInAllColumnsByValue(parameters), pageable, searchInAllColumnsByValue(parameters).size());
@@ -69,13 +68,22 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponseDTO updateTask(TaskResponseDTO taskResponseDTO) {
-        Task task = taskMapper.toDomain(taskResponseDTO);
-        return taskMapper.toDTO(taskRepository.save(task));
+    public Integer updateTask(TaskRequestDTO taskRequestDTO) {
+        if (taskRepository.findById(taskRequestDTO.getId()).isPresent()) {
+            taskRepository.save(taskMapper.toDomain(taskRequestDTO));
+            return taskRequestDTO.getId(); //TODO implement date in progres, done itd
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public void deleteTask(int id) {
-        taskRepository.deleteById(id);
+    public Integer deleteTask(int id) {
+        try {
+            taskRepository.deleteById(id);
+        } catch (Exception e) {
+            return null;
+        }
+        return id;
     }
 }

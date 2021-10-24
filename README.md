@@ -28,10 +28,12 @@ First of all, this API created for job interview, so it's not oriented to grow, 
 Use Id type int instead of long or UUID.
 Don't split in separate modules and use simple structure.
 
-I hesitate between two ways of filtering implementation:
+I hesitate between 3 ways of filtering implementation:
 1. Use @GetMapping with one filter on all columns in parameter.
-2. Use @PostMapping with separate filter for every column in body
-I decide to use first one, because for me is more convenient use one search box to search what I need.
+2. Use @GetMapping with every column filter in parameter.
+3. Use @PostMapping with separate filter for every column in body
+I decide to use second one, because I think Get request better solution to get data, than Post.
+And for task-management-api for me is better to have filtering by column, than one search box. 
 
 To handle responses between service and controller(not found, already exist) I decide to not use exceptions, 
 to be faster and more simple.

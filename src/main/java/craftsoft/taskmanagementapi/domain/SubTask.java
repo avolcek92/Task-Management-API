@@ -12,7 +12,12 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table( name = "subtask")
-public class SubTask extends BaseEntity {
+public class SubTask extends TimeTrackingEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected int id;
 
     @Column(name = "name", nullable = false)
     private String name;
