@@ -2,17 +2,14 @@ package craftsoft.taskmanagementapi.dto;
 
 import craftsoft.taskmanagementapi.domain.enums.Group;
 import craftsoft.taskmanagementapi.domain.enums.Status;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-import java.util.List;
-
-@Builder
-@AllArgsConstructor
 @Getter
 @Setter
-public class TaskResponseDTO {
-
-    private int id;
+@RequiredArgsConstructor
+public class FilterParametersDTO {
 
     private String name;
 
@@ -26,5 +23,7 @@ public class TaskResponseDTO {
 
     private Long duration;
 
-    private List<SubTaskResponseDTO> subTask;
+    public boolean isEmpty() {
+        return (name == null && description == null && group == null && status == null && assignee == null && duration == null);
+    }
 }

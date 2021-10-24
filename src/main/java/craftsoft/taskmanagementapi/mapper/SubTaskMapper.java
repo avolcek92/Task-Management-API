@@ -1,14 +1,15 @@
 package craftsoft.taskmanagementapi.mapper;
 
 import craftsoft.taskmanagementapi.domain.SubTask;
-import craftsoft.taskmanagementapi.dto.SubTaskDTO;
+import craftsoft.taskmanagementapi.dto.SubTaskRequestDTO;
+import craftsoft.taskmanagementapi.dto.SubTaskResponseDTO;
 import org.springframework.stereotype.Component;
 
 @Component("subtaskMapper")
 public class SubTaskMapper {
 
-    public SubTaskDTO toDTO(SubTask subTaskDomain) {
-        return SubTaskDTO.builder()
+    public SubTaskResponseDTO toDTO(SubTask subTaskDomain) {
+        return SubTaskResponseDTO.builder()
                 .id(subTaskDomain.getId())
                 .name(subTaskDomain.getName())
                 .description(subTaskDomain.getDescription())
@@ -16,11 +17,19 @@ public class SubTaskMapper {
                 .build();
     }
 
-    public SubTask toDomain(SubTaskDTO subTaskDTO) {
+    public SubTask toDomain(SubTaskResponseDTO subTaskResponseDTO) {
         return SubTask.builder()
-                .name(subTaskDTO.getName())
-                .description(subTaskDTO.getDescription())
-                .status(subTaskDTO.getStatus())
+                .name(subTaskResponseDTO.getName())
+                .description(subTaskResponseDTO.getDescription())
+                .status(subTaskResponseDTO.getStatus())
+                .build();
+    }
+
+    public SubTask toDomain(SubTaskRequestDTO subTaskRequestDTO) {
+        return SubTask.builder()
+                .name(subTaskRequestDTO.getName())
+                .description(subTaskRequestDTO.getDescription())
+                .status(subTaskRequestDTO.getStatus())
                 .build();
     }
 }

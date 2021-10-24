@@ -2,7 +2,7 @@ package craftsoft.taskmanagementapi.mapper;
 
 import craftsoft.taskmanagementapi.domain.SubTask;
 import craftsoft.taskmanagementapi.domain.Task;
-import craftsoft.taskmanagementapi.dto.SubTaskDTO;
+import craftsoft.taskmanagementapi.dto.SubTaskResponseDTO;
 import craftsoft.taskmanagementapi.dto.TaskRequestDTO;
 import craftsoft.taskmanagementapi.dto.TaskResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +26,11 @@ public class TaskMapper {
                 .status(taskDomain.getStatus())
                 .assignee(taskDomain.getAssignee())
                 .duration(taskDomain.getDuration())
-                .subTask(taskDomain.getSubTask() == null ? new ArrayList<SubTaskDTO>() : taskDomain.getSubTask().stream().map(subTask -> subTaskMapper.toDTO(subTask)).collect(Collectors.toList()))
+                .subTask(taskDomain.getSubTask() == null ? new ArrayList<SubTaskResponseDTO>() : taskDomain.getSubTask().stream().map(subTask -> subTaskMapper.toDTO(subTask)).collect(Collectors.toList()))
                 .build();
     }
 
-    public Task toDomain (TaskResponseDTO taskResponseDTO) {
+    public Task toDomain(TaskResponseDTO taskResponseDTO) {
         return Task.builder()
                 .name(taskResponseDTO.getName())
                 .description(taskResponseDTO.getDescription())
@@ -38,19 +38,16 @@ public class TaskMapper {
                 .status(taskResponseDTO.getStatus())
                 .assignee(taskResponseDTO.getAssignee())
                 .duration(taskResponseDTO.getDuration())
-                .subTask(taskResponseDTO.getSubTask() == null ? new ArrayList<SubTask>() : taskResponseDTO.getSubTask().stream().map(subTaskDTO -> subTaskMapper.toDomain(subTaskDTO)).collect(Collectors.toList()))
+                .subTask(taskResponseDTO.getSubTask() == null ? new ArrayList<SubTask>() : taskResponseDTO.getSubTask().stream().map(subTaskResponseDTO -> subTaskMapper.toDomain(subTaskResponseDTO)).collect(Collectors.toList()))
                 .build();
     }
 
-    public Task toDomain (TaskRequestDTO taskRequestDTO) {
-        return Task.builder()
-                .id(taskRequestDTO.getId())
-                .name(taskRequestDTO.getName())
-                .description(taskRequestDTO.getDescription())
-                .group(taskRequestDTO.getGroup())
-                .status(taskRequestDTO.getStatus())
-                .assignee(taskRequestDTO.getAssignee())
-                .subTask(taskRequestDTO.getSubTask() == null ? new ArrayList<SubTask>() : taskRequestDTO.getSubTask().stream().map(subTaskDTO -> subTaskMapper.toDomain(subTaskDTO)).collect(Collectors.toList()))
-                .build();
+    public void toDomain(Task task, TaskRequestDTO taskRequestDTO) {
+        task.setName(taskRequestDTO.getName());
+        task.setDescription(taskRequestDTO.getDescription());
+        task.setGroup(taskRequestDTO.getGroup());
+        task.setStatus(taskRequestDTO.getStatus());
+        task.setAssignee(taskRequestDTO.getAssignee());
+        task.setSubTask(taskRequestDTO.getSubTask() == null ? new ArrayList<SubTask>() : taskRequestDTO.getSubTask().stream().map(subTaskResponseDTO -> subTaskMapper.toDomain(subTaskResponseDTO)).collect(Collectors.toList()));
     }
 }

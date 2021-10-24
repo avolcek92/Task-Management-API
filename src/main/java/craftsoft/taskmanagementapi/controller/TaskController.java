@@ -1,8 +1,6 @@
 package craftsoft.taskmanagementapi.controller;
 
-import craftsoft.taskmanagementapi.domain.enums.Group;
-import craftsoft.taskmanagementapi.domain.enums.Status;
-import craftsoft.taskmanagementapi.dto.Parameters;
+import craftsoft.taskmanagementapi.dto.FilterParametersDTO;
 import craftsoft.taskmanagementapi.dto.TaskRequestDTO;
 import craftsoft.taskmanagementapi.dto.TaskResponseDTO;
 import craftsoft.taskmanagementapi.service.TaskService;
@@ -49,24 +47,8 @@ public class TaskController {
             @RequestParam(required = false, name = "page", defaultValue = "0") int page,
             @RequestParam(required = false, name = "size", defaultValue = "20") int pageSize,
             @RequestParam(required = false, name = "sortField", defaultValue = "name") String sortField,
-            @RequestParam(required = false, name = "name") String name,
-            @RequestParam(required = false, name = "description") String description,
-            @RequestParam(required = false, name = "group") Group group,
-            @RequestParam(required = false, name = "status") Status status,
-            @RequestParam(required = false, name = "assignee") String assignee,
-            @RequestParam(required = false, name = "duration") Long duration) {
-        Parameters parameters = Parameters.builder()
-                .page(page)
-                .pageSize(pageSize)
-                .sortField(sortField)
-                .name(name)
-                .description(description)
-                .group(group)
-                .status(status)
-                .assignee(assignee)
-                .duration(duration)
-                .build();
-        Page<TaskResponseDTO> taskResponseDTOPage = taskService.getAllTasks(parameters);
+            FilterParametersDTO filterParametersDTO) {
+        Page<TaskResponseDTO> taskResponseDTOPage = taskService.getAllTasks(filterParametersDTO, page, pageSize, sortField);
         if (taskResponseDTOPage.isEmpty()) {
             logger.info("Empty list of Tasks was retrieved");
             return ResponseEntity.noContent().build();

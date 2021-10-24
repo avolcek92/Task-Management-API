@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Entity
-@Table( name = "subtask")
+@Table(name = "subtask")
 public class SubTask extends TimeTrackingEntity {
 
     @Id
