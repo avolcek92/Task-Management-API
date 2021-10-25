@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.net.URI;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -23,14 +25,14 @@ public class SubTaskController {
     SubTaskService subTaskService;
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createSubTask(@RequestBody SubTaskRequestDTO subTaskRequestDTO) {
+    public ResponseEntity<String> createSubTask(@Valid @RequestBody SubTaskRequestDTO subTaskRequestDTO) {
         int createdSubTaskId = subTaskService.createSubTask(subTaskRequestDTO);
         logger.info("New SubTask was created id:{}", createdSubTaskId);
         return ResponseEntity.created(URI.create("/subTasks/" + createdSubTaskId)).build();
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<SubTaskResponseDTO> getSubTaskById(@PathVariable("id") int id) {
+    public ResponseEntity<SubTaskResponseDTO> getSubTaskById(@PathVariable("id") @Min(1) int id) {
         SubTaskResponseDTO subTaskResponseDTO = subTaskService.getSubTaskById(id);
         if (subTaskResponseDTO == null) {
             logger.info("SubTask with id:{} not exist", id);
@@ -41,7 +43,7 @@ public class SubTaskController {
     }
 
     @PutMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateSubTask(@RequestBody SubTaskRequestDTO subTaskRequestDTO) {
+    public ResponseEntity<Void> updateSubTask(@Valid @RequestBody SubTaskRequestDTO subTaskRequestDTO) {
         Integer subTaskId = subTaskService.updateSubTask(subTaskRequestDTO);
         if (subTaskId == null) {
             logger.info("Can't update, SubTask not exist");
@@ -53,7 +55,7 @@ public class SubTaskController {
     }
 
     @DeleteMapping(value = "/{subTaskId}")
-    public ResponseEntity<Void> deleteSubTask(@PathVariable("subTaskId") int id) {
+    public ResponseEntity<Void> deleteSubTask(@PathVariable("subTaskId") @Min(1) int id) {
         Integer subTaskId = subTaskService.deleteSubTask(id);
         if (subTaskId == null) {
             logger.info("Can't delete, SubTask already not exist");

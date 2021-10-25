@@ -17,33 +17,22 @@ public class TaskRequestDTO {
 
     @JsonProperty(required = true)
     @NotEmpty
-    @NotBlank
-    @Max(value = 30)
+    @Size(min = 1, max = 30)
     private String name;
 
     @JsonProperty(required = true)
     @NotEmpty
-    @NotBlank
-    @Max(value = 300)
+    @Size(min = 1, max = 300)
     private String description;
 
-    //TODO Add pattern validation
     @JsonProperty(required = true)
-    @NotEmpty
-    @NotBlank
     private Group group;
 
-    //TODO Add pattern validation
     @JsonProperty(required = true)
-    @NotEmpty
-    @NotBlank
     private Status status;
 
-    @JsonProperty()
-    @Size(min = 2, max = 50)
+    @Size(min = 1, max = 50)
     private String assignee;
 
-    @JsonProperty()
     private List<SubTaskResponseDTO> subTask;
-
 }

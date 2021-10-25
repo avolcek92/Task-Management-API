@@ -1,6 +1,6 @@
-//Validators
-//Exception Handler
-//Tests
+//Handle ENUMS?
+//Unit and Integration tests
+//
 
 Here I describe some implementation decisions:
 
