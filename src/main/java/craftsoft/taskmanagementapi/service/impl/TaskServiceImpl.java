@@ -42,7 +42,7 @@ public class TaskServiceImpl implements TaskService {
     public int createTask(TaskRequestDTO taskRequestDTO) {
         Task task = new Task();
         taskMapper.toDomain(task, taskRequestDTO);
-        taskRepository.save(task);
+        task = taskRepository.save(task);
         return task.getId();
     }
 
@@ -72,7 +72,8 @@ public class TaskServiceImpl implements TaskService {
         if (filterParametersDTO.isEmpty()) {
             return taskRepository.findAll(pageable).map(task -> taskMapper.toDTO(task));
         } else {
-            return new PageImpl<>(searchInAllColumnsByValue(filterParametersDTO), pageable, searchInAllColumnsByValue(filterParametersDTO).size());
+
+            return getAllTaskByFilters(filterParametersDTO, pageable);
         }
     }
 
@@ -81,16 +82,17 @@ public class TaskServiceImpl implements TaskService {
      * retrieve all possible Tasks by column filters.
      *
      * @param filterParametersDTO - filtering parameters data transfer object with columns values.
+     * @param pageable            - pageable parameters.
      * @return list of Task by filtering parameters.
      */
-    private List<TaskResponseDTO> searchInAllColumnsByValue(FilterParametersDTO filterParametersDTO) {
+    private Page<TaskResponseDTO> getAllTaskByFilters(FilterParametersDTO filterParametersDTO, Pageable pageable) {
         StringFilterSpecification nameColumnSpecification = new StringFilterSpecification("name", filterParametersDTO.getName());
         StringFilterSpecification descriptionColumnSpecification = new StringFilterSpecification("description", filterParametersDTO.getDescription());
         StatusFilterSpecification statusColumnSpecification = new StatusFilterSpecification("status", filterParametersDTO.getStatus());
         GroupFilterSpecification groupColumnSpecification = new GroupFilterSpecification("group", filterParametersDTO.getGroup());
         StringFilterSpecification assigneeColumnSpecification = new StringFilterSpecification("assignee", filterParametersDTO.getAssignee());
         LongFilterSpecification durationColumnSpecification = new LongFilterSpecification("duration", filterParametersDTO.getDuration());
-        return taskRepository.findAll(Specification
+        List<TaskResponseDTO> filteredListDTOS = taskRepository.findAll(Specification
                         .where(nameColumnSpecification)
                         .or(descriptionColumnSpecification)
                         .or(statusColumnSpecification)
@@ -100,6 +102,7 @@ public class TaskServiceImpl implements TaskService {
                 .stream()
                 .map(task -> taskMapper.toDTO(task))
                 .collect(Collectors.toList());
+        return new PageImpl<>(filteredListDTOS, pageable, filteredListDTOS.size());
     }
 
     /**
