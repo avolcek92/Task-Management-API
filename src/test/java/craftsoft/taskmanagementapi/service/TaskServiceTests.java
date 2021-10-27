@@ -11,24 +11,22 @@ import craftsoft.taskmanagementapi.mapper.TaskMapper;
 import craftsoft.taskmanagementapi.service.impl.TaskServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -39,15 +37,15 @@ class TaskServiceTests {
     @Mock
     private TaskRepository taskRepository;
 
-    @InjectMocks
-    private TaskServiceImpl taskService;
-
     @Mock
     private TaskMapper taskMapper;
 
+    @InjectMocks
+    private TaskServiceImpl taskService;
+
     @Test
     void test_getAllFilteredAndPaginatedAndSortedTasks() {
-        //Task Repository Mock
+
         Pageable pageable = PageRequest.of(0, 20, Sort.by("name").ascending());
         FilterParametersDTO filterParametersDTO = new FilterParametersDTO(null, null, Group.BACKEND, null, null, null);
         List<Task> tasks = new ArrayList<>();
@@ -56,25 +54,19 @@ class TaskServiceTests {
         tasks.add(firstTask);
         tasks.add(secondTask);
         Page<Task> pagedTasks = new PageImpl(tasks, pageable, 2);
+        TaskResponseDTO firstTaskResponseDTO = new TaskResponseDTO(1, "FirstTaskName", "TaskDescription", Group.BACKEND, Status.IN_PROGRESS, null, null, null);
+        TaskResponseDTO secondTaskResponseDTO = new TaskResponseDTO(2, "SecondTaskName", "SecondTaskDescription", Group.FRONTEND, Status.DONE, null, null, null);
 
         when(taskRepository.findAll(pageable)).thenReturn(pagedTasks);
         when(taskRepository.findAll(any(Specification.class))).thenReturn(tasks.stream().filter(task -> task.getGroup().equals(Group.BACKEND)).collect(Collectors.toList()));
-
-        //Task Mapper Mock
-        TaskResponseDTO firstTaskResponseDTO = new TaskResponseDTO(1, "FirstTaskName", "TaskDescription", Group.BACKEND, Status.IN_PROGRESS, null, null, null);
-        TaskResponseDTO secondTaskResponseDTO = new TaskResponseDTO(2, "SecondTaskName", "SecondTaskDescription", Group.FRONTEND, Status.DONE, null, null, null);
         when(taskMapper.toDTO(firstTask)).thenReturn(firstTaskResponseDTO);
         when(taskMapper.toDTO(secondTask)).thenReturn(secondTaskResponseDTO);
 
-        //Call tested method with filterParameters and without
         Page<TaskResponseDTO> filteredTasks = taskService.getAllTasks(filterParametersDTO, 0, 20, "name");
         Page<TaskResponseDTO> allTasks = taskService.getAllTasks(new FilterParametersDTO(), 0, 20, "name");
 
-        //Asserts for filteredTasks
         assertEquals(1L, filteredTasks.getTotalElements());
         assertEquals(firstTaskResponseDTO, filteredTasks.getContent().get(0));
-
-        //Asserts for allTasks
         assertEquals(20, allTasks.getSize());
         assertEquals(2L, allTasks.getTotalElements());
         assertEquals(Sort.by("name").ascending(), allTasks.getSort());
@@ -83,6 +75,7 @@ class TaskServiceTests {
 
     @Test
     void test_createTask() {
+
         Task task = new Task();
         task.setId(1);
         TaskRequestDTO taskRequestDTO = new TaskRequestDTO();
@@ -115,10 +108,11 @@ class TaskServiceTests {
 
     @Test
     void test_updateTask() {
+
         Optional<Task> taskCreated = Optional.of(new Task(1, "TaskName", "TaskDescription", Group.BACKEND, Status.CREATED, null, null, null, null, null, null));
-        Optional<Task> taskInProgress = Optional.of(new Task(2, "TaskName", "TaskDescription", Group.BACKEND, Status.IN_PROGRESS, null, null, null, null, null, null));
-        Optional<Task> taskInTest = Optional.of(new Task(3, "TaskName", "TaskDescription", Group.BACKEND, Status.IN_TEST, null, null, null, null, null, null));
-        Optional<Task> taskInDone = Optional.of(new Task(4, "TaskName", "TaskDescription", Group.BACKEND, Status.DONE, null, null, null, null, null, null));
+        Optional<Task> taskInProgress = Optional.of(new Task(2, "TaskName", "TaskDescription", Group.BACKEND, Status.IN_PROGRESS, null, LocalDateTime.of(2020, 6, 6, 6, 6), null, null, null, null));
+        Optional<Task> taskInTest = Optional.of(new Task(3, "TaskName", "TaskDescription", Group.BACKEND, Status.IN_TEST, null, LocalDateTime.of(2021, 6, 6, 6, 6), LocalDateTime.of(2021, 8, 6, 6, 6), null, null, null));
+        Optional<Task> taskInDone = Optional.of(new Task(4, "TaskName", "TaskDescription", Group.BACKEND, Status.DONE, null, LocalDateTime.of(2021, 6, 6, 6, 6), LocalDateTime.of(2021, 8, 6, 6, 6), LocalDateTime.of(2021, 10, 6, 6, 6), null, null));
         Optional<Task> emptyTask = Optional.empty();
 
         TaskRequestDTO taskRequestDTOInProgress = new TaskRequestDTO(1, "TaskName", "TaskDescription", Group.BACKEND, Status.IN_PROGRESS, null, null);
@@ -136,13 +130,11 @@ class TaskServiceTests {
         doNothing().when(taskMapper).toDomain(any(Task.class), any(TaskRequestDTO.class));
         when(taskRepository.save(any(Task.class))).thenAnswer(i -> i.getArguments()[0]);
 
-
         Integer inProgressSavedTaskId = taskService.updateTask(taskRequestDTOInProgress);
         Integer inTestSavedTaskId = taskService.updateTask(taskRequestDTOInTest);
         Integer doneSavedTaskId = taskService.updateTask(taskRequestDTODone);
         Integer secondDoneSavedTaskId = taskService.updateTask(taskRequestDTODoneTwo);
         Integer notSavedTaskId = taskService.updateTask(notExistedTaskRequestDTO);
-
 
         assertEquals(1, inProgressSavedTaskId);
         assertEquals(2, inTestSavedTaskId);
@@ -150,5 +142,18 @@ class TaskServiceTests {
         assertEquals(4, secondDoneSavedTaskId);
         assertNull(notSavedTaskId);
 
+    }
+
+    @Test
+    void test_deleteTask() {
+
+        doNothing().when(taskRepository).deleteById(1);
+        doThrow(new EmptyResultDataAccessException(1)).when(taskRepository).deleteById(2);
+
+        Integer taskId = taskService.deleteTask(1);
+        Integer taskIdNull = taskService.deleteTask(2);
+
+        assertEquals(1, taskId);
+        assertNull(taskIdNull);
     }
 }

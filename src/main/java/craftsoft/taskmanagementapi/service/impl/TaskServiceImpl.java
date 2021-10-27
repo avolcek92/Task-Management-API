@@ -13,6 +13,7 @@ import craftsoft.taskmanagementapi.service.filter.LongFilterSpecification;
 import craftsoft.taskmanagementapi.service.filter.StatusFilterSpecification;
 import craftsoft.taskmanagementapi.service.filter.StringFilterSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -122,7 +123,7 @@ public class TaskServiceImpl implements TaskService {
             taskMapper.toDomain(task, taskRequestDTO);
             setTaskDurationInHours(task);
             taskRepository.save(task);
-            return taskRequestDTO.getId();
+            return task.getId();
         } else {
             return null;
         }
@@ -170,7 +171,7 @@ public class TaskServiceImpl implements TaskService {
     public Integer deleteTask(int taskId) {
         try {
             taskRepository.deleteById(taskId);
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
         return taskId;

@@ -7,6 +7,7 @@ import craftsoft.taskmanagementapi.dto.SubTaskResponseDTO;
 import craftsoft.taskmanagementapi.mapper.SubTaskMapper;
 import craftsoft.taskmanagementapi.service.SubTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -69,7 +70,7 @@ public class SubTaskServiceImpl implements SubTaskService {
     public Integer deleteSubTask(int subTaskId) {
         try {
             subTaskRepository.deleteById(subTaskId);
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
         return subTaskId;
