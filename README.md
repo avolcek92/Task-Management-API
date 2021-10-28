@@ -11,10 +11,7 @@
 * Maven
 * H2
 * Java 11
-* Swagger
-
-
-
+* Postgresql and Heroku for deployment
 
 ---
 
@@ -126,9 +123,17 @@ You also can send GET,POST,PUT,DELETE requests to /subTasks endpoint
 
 ---
 ## Deployment:
+Application is deployed to Heroku.
+You can reach application by URL: https://av-task-management-api.herokuapp.com
 
-
-
+Endpoint for task:
+```sh
+https://av-task-management-api.herokuapp.com/api/v1/tasks
+```
+Endpoint for subTask:
+```sh
+https://av-task-management-api.herokuapp.com/api/v1/subTasks
+```
 ---
 ## A covering note explaining the choices for application design:
 As my project required to be finished in a limited time:
@@ -166,6 +171,16 @@ For the project structure, I'm using layered architecture, because :
 ### Tests
 
 I created an integration test to cover the whole project, where I mock requests to the controller. Unit tests are covering the service part because there is the biggest part of the project logic.
+
+---
+### Profiles
+
+I add four different profiles:
+1. dev   - to work local with H2 DB
+2. test  - to apply integration tests
+3. prod  - to deploy app with postgresql to heroku
+4. postgresql - to work local with postgresql DB
+
 
 ---
 ## Other considerations/future enhancements or improvements
